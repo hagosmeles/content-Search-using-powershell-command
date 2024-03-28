@@ -1,0 +1,19 @@
+Set-ExecutionPolicy unrestricted
+Install-Module exchangeonlinemanagement -Force
+Import-Module exchangeonlinemanagement
+Connect-ExchangeOnline
+Connect-IPPSSession
+$Sender ="user1@contoso.com"
+$recipient = "user2@contoso.com"
+# Date range for the search - make this as precise as possible
+$StartDate = "10-Aug-2021"
+$EndDate = "13-Sep-2021"
+$Start = (Get-Date $StartDate).ToString('2023-08-15')
+$End = (Get-Date $EndDate).ToString('2023-09-15')
+$ContentQuery = '(c:c)(received=' + $Start + '..' + $End +')(senderauthor -like ' + $Sender + ')(to -like ' + $recipient + ')'
+
+$ContentQuery
+
+New-ComplianceSearch -Name "contentsearchResult" -ContentMatchQuery $ContentQuery -ExchangeLocation All -AllowNotFoundExchangeLocationsEnabled $True | Out-Null
+
+Start-ComplianceSearch -Identity "contentsearchResult" | Out-Null
